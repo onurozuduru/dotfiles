@@ -15,8 +15,6 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
-alias home="cd $HOME"
-
 # Redefine if exa exits
 if [ -x "$(command -v exa)" ]; then
     alias ls="exa -F --icons"
