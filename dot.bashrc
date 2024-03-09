@@ -83,10 +83,9 @@ case "$TERM" in
         ;;
 esac
 
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+if [ -f ~/.bash_config/env ]; then
+    . ~/.bash_config/env
+fi
 
 if [ -f ~/.bash_config/aliases ]; then
     . ~/.bash_config/aliases
@@ -94,10 +93,6 @@ fi
 
 if [ -f ~/.bash_config/functions ]; then
     . ~/.bash_config/functions
-fi
-
-if [ -f ~/.bash_config/env ]; then
-    . ~/.bash_config/env
 fi
 
 if [ -f ~/.bash_config/work/bashrc ]; then
@@ -122,6 +117,10 @@ if ! shopt -oq posix; then
     elif [ -f /etc/bash_completion ]; then
         . /etc/bash_completion
     fi
+fi
+
+if [ -x "$(command -v oh-my-posh)" ]; then
+    eval "$(oh-my-posh --init --shell bash --config ~/.poshthemes/user.omp.json)"
 fi
 
 # Start messages for new bash window
