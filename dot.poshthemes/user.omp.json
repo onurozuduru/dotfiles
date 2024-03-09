@@ -18,9 +18,9 @@
           "foreground": "#fff",
           "leading_diamond": "\ue0c7",
           "properties": {
-            "style": "agnoster_short",
+            "folder_icon": "\uf754 ",
             "max_depth": 3,
-            "folder_icon": " "
+            "style": "agnoster_short"
           },
           "style": "diamond",
           "template": " {{ .Path }} ",
@@ -28,7 +28,7 @@
           "type": "path"
         },
         {
-          "background": "lightCyan",
+          "background": "cyan",
           "foreground": "#fff",
           "leading_diamond": "\ue0c7",
           "properties": {
