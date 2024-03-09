@@ -38,13 +38,26 @@ installed() {
 
 ## $1: user
 ## $2: repo
+## $3: type -> deb | appimage
 install_from_github() {
-    log_this "Installing from GitHub: $1/$2"
-    local latest_download_url=$(curl -s "https://api.github.com/repos/$1/$2/releases/latest" | awk -F '"' '/browser_download_url/{print $4}' | grep "deb" | grep -v "sha256")
-    local deb_name=$(basename "$latest_download_url")
-    log_this "Found: $deb_name"
+    local user="$1"
+    local repo="$2"
+    local type="$3"
+    log_this "Installing '${type}' from GitHub: ${user}/${repo}"
+    local latest_download_url=$(curl -s "https://api.github.com/repos/${user}/${repo}/releases/latest" | awk -F '"' '/browser_download_url/{print $4}' | grep "${type}" | grep -v "${type}.")
+    local download_name=$(basename "$latest_download_url")
+    log_this "Found: $download_name"
     curl -LO "$latest_download_url"
-    sudo dpkg -i "$deb_name"
+    if [[ "$type" == "deb" ]]; then
+        sudo dpkg -i "$download_name"
+    else
+        local bin_name="${download_name%.appimage}"
+        mkdir "$bin_name"
+        mv "$download_name" "$bin_name/$download_name"
+        chmod +x "$bin_name/$download_name"
+        "$bin_name/$download_name" --appimage-extract
+        ln -s "$bin_name/$download_name/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name"
+    fi
 }
 
 ### Check if package exist and install
@@ -129,13 +142,12 @@ done
 
 # Install ripgrep
 if ! installed rg; then
-    install_from_github BurntSushi ripgrep
+    install_from_github BurntSushi ripgrep deb
 fi
 
-# Install neovim from snap
+# Install neovim appimage
 if ! installed nvim; then
-    log_this "sudo snap install nvim --classic"
-    sudo snap install nvim --classic
+    install_from_github neovim neovim appimage
 fi
 
 if ! installed npm; then
