@@ -44,7 +44,7 @@
             "branch_icon": ""
           },
           "style": "diamond",
-          "template": " git({{ .HEAD }}) ",
+          "template": " \uf418({{ .HEAD }}) ",
           "trailing_diamond": "\ue0c6",
           "type": "git"
         }
