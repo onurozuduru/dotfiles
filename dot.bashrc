@@ -100,12 +100,15 @@ if [ -f ~/.bash_config/work/bashrc ]; then
 fi
 
 # FZF support
+# freaking key-bindings file could be in different locations
 if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
     . /usr/share/doc/fzf/examples/key-bindings.bash
 fi
-
+if [ -f /usr/share/fzf/key-bindings.bash ]; then
+    . /usr/share/fzf/key-bindings.bash
+fi
 if [ -f ~/.fzf.bash ];then
-    source ~/.fzf.bash
+    . ~/.fzf.bash
 fi
 
 # enable programmable completion features (you don't need to enable
