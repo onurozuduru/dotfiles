@@ -123,6 +123,9 @@ if [ -x "$(command -v oh-my-posh)" ]; then
     eval "$(oh-my-posh --init --shell bash --config ~/.poshthemes/user.omp.json)"
 fi
 
+# Expand paths with tab e.g. $HOME
+shopt -s direxpand
+
 # Start messages for new bash window
 clear
 echo -e "\e[1mWelcome, ${USER^}\e[0m"
