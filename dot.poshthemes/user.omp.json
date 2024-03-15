@@ -27,7 +27,7 @@
           "foreground": "#fff",
           "leading_diamond": "\ue0c7",
           "properties": {
-            "folder_icon": "\uf754 ",
+            "folder_icon": "\udb80\ude55 ",
             "max_depth": 3,
             "style": "agnoster_short"
           },
