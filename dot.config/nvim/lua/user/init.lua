@@ -32,6 +32,7 @@ return {
       clangd = function(opts)
         opts.filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp" }
         opts.root_dir = require("lspconfig.util").root_pattern "compile_commands.json"
+        opts.capabilities = { offsetEncoding = "utf-16" }
         return opts
       end,
     },
