@@ -1,4 +1,7 @@
 return {
+  updater = {
+    version = "v3.45.3",
+  },
   -- Set colorscheme to use
   colorscheme = "astrodark",
 
@@ -13,7 +16,7 @@ return {
     formatting = {
       -- control auto formatting on save
       format_on_save = {
-        enabled = true,      -- enable or disable format on save globally
+        enabled = true, -- enable or disable format on save globally
         ignore_filetypes = { -- disable format on save for specified filetypes
           "go",
         },
