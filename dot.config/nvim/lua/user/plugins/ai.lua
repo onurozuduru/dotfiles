@@ -6,14 +6,22 @@ return {
     config = function()
       vim.g.codeium_tab_fallback = ""
       vim.g.codeium_no_map_tab = true
-      vim.g.codeium_disable_bindings = 1
+      vim.g.codeium_disable_bindings = true
       vim.g.codeium_enabled = false
+      vim.g.codeium_filetypes_disabled_by_default = true
+      vim.g.codeium_filetypes = {
+        ["rust"] = true,
+        ["cpp"] = true,
+        ["sh"] = true,
+        ["python"] = true,
+        ["lua"] = true,
+      }
 
       -- Disable codeium in buffer
-      vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-        pattern = "*",
-        callback = function() vim.fn["codeium#command#Command"] "DisableBuffer" end,
-      })
+      -- vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+      --   pattern = "*",
+      --   callback = function() vim.fn["codeium#command#Command"] "DisableBuffer" end,
+      -- })
 
       -- Register keybindings to which-key for normal mode
       require("which-key").register {
@@ -24,6 +32,7 @@ return {
           b = { "<cmd>Codeium DisableBuffer<cr>", "Buffer disable Codeium" },
           B = { "<cmd>Codeium EnableBuffer<cr>", "Buffer enable Codeium" },
           s = { "<cmd>lua print(vim.fn['codeium#GetStatusString']())<cr>", "Status" },
+          C = { "<cmd>call codeium#Chat()<cr>", "Chat" },
         },
       }
 
