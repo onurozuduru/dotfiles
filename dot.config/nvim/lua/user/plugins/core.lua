@@ -40,8 +40,24 @@ return {
   },
   {
     "AstroNvim/astrotheme",
-    version = "^1.7.0",
+    -- version = "^1.7.0",
     optional = true,
+    opts = {
+      style = {
+        italic_comments = false, -- Bool value, toggles italic comments.
+        simple_syntax_colors = true, -- Bool value, simplifies the amounts of colors used for syntax highlighting.
+      },
+      highlights = {
+        astrodark = {
+          modify_hl_groups = function(hl, c) -- modify_hl_groups function allows you to modify hl groups,
+            hl.Search = { fg = c.ui.base, bg = c.ui.yellow }
+            hl.IncSearch = { fg = c.ui.yellow, bg = c.ui.base }
+          end,
+          ["DiagnosticDeprecated"] = { strikethrough = false, underline = true },
+          ["DiagnosticUnnecessary"] = { italic = true, underline = true },
+        },
+      },
+    },
   },
   -- You can disable default plugins as follows:
   -- { "max397574/better-escape.nvim", enabled = false },
