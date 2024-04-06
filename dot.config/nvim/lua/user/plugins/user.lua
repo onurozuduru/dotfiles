@@ -6,10 +6,6 @@ return {
   "wellle/targets.vim",
   "p00f/clangd_extensions.nvim",
   "LnL7/vim-nix",
-  {
-    "lewis6991/spellsitter.nvim",
-    config = function() require("spellsitter").setup() end,
-  },
   -- {
   --   "ray-x/go.nvim",
   --   config = function()
