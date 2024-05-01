@@ -51,7 +51,7 @@ return {
         ["<Leader>w"] = false, -- Disable Save (not using)
         ["<Leader>o"] = false, -- Disable Toggle explorer focus (not using, Toggle explorer is enough)
         -- ["<C-s>"] = { "o<esc>k<cr><esc>", desc = "Add newline from normal mode" },
-        ["<C-s>"] = { "o<esc><esc>", desc = "Add newline from normal mode" },
+        ["<C-S>"] = { "o<esc><esc>", desc = "Add newline from normal mode" },
         ["<Leader>c"] = { "<cmd>cclose<cr>", desc = "Close files window" },
         ["<Leader>uz"] = false, -- Remap: Toggle color highlight
         ["<Leader>h"] = { "<cmd>ColorizerToggle<cr>", desc = "Toggle color highlight" },
