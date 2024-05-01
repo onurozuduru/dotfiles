@@ -44,9 +44,9 @@ return {
     keys = function()
       return {
         { "<M-Bslash>", mode = "i", false },
-        { "<M-]>",      mode = "i", false },
-        { "<M-[>",      mode = "i", false },
-        { "<C-]>",      mode = "i", false },
+        { "<M-]>", mode = "i", false },
+        { "<M-[>", mode = "i", false },
+        { "<C-]>", mode = "i", false },
         {
           "<C-f>a",
           function() return vim.fn["codeium#Accept"]() end,
