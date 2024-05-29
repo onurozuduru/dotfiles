@@ -81,6 +81,9 @@ return {
       t = {
         ["<esc>"] = { "<C-\\><C-n>", desc = "Escape to terminal normal mode" },
       },
+      i = {
+        ["<C-S>"] = false, -- Disable force write
+      },
     },
   },
 }

@@ -128,7 +128,7 @@ return {
       -- always_trigger = false, -- sometime show signature on new line or in middle of parameter can be confusing, set it to false for #58
       -- zindex = 200, -- by default it will be on top of all floating windows, set to <= 50 send it to bottom
       -- timer_interval = 200, -- default timer check interval set to lower value if you want to reduce latency
-      -- toggle_key = nil, -- toggle signature on and off in insert mode,  e.g. toggle_key = '<m-x>'
+      -- toggle_key = "<C-X>", -- toggle signature on and off in insert mode,  e.g. toggle_key = '<m-x>'
       -- toggle_key_flip_floatwin_setting = true,
       -- select_signature_key = "<F12>", -- cycle to next signature, e.g. '<m-n>' function overloading
       -- move_cursor_key = nil, -- imap, use nvim_set_current_win to move cursor between current win and floating
@@ -143,6 +143,13 @@ return {
           mode = "i",
           expr = true,
           desc = "Select Signature",
+        },
+        {
+          "<C-X>",
+          function() require("lsp_signature").toggle_float_win() end,
+          mode = "i",
+          expr = true,
+          desc = "Toggle signature help",
         },
       }
     end,
@@ -215,6 +222,21 @@ return {
           end,
         },
       },
+    },
+  },
+  {
+    "onurozuduru/himarkdown.nvim",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    opts = {
+      captures = {
+        title = { mark = "" },
+        quote = { mark = "󰝗" },
+        dash = { mark = "󰇘" },
+      },
+    },
+    lazy = false,
+    keys = {
+      { "<Leader>m", function() require("himarkdown").toggle() end, desc = "Toggle HiMarkdown" },
     },
   },
   -- {

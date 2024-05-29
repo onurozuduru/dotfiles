@@ -35,6 +35,33 @@ return {
         -- "python",
         -- add more arguments for adding more debuggers
       })
+      opts.handlers = {
+        cppdbg = function(cppdbg)
+          local dap = require "dap"
+          dap.adapters.cppdbg = cppdbg.adapters
+          dap.configurations.cpp = cppdbg.configurations
+          table.insert(dap.configurations.cpp, {
+            name = "Launch Gtest",
+            type = "cppdbg",
+            request = "launch",
+            program = function() return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file") end,
+            args = function() return { vim.fn.input "Args: " } end,
+            cwd = "${workspaceFolder}",
+            stopAtEntry = false,
+          })
+          for _, cpp_configuration in ipairs(dap.configurations.cpp) do
+            local config_pretty_print = {
+              text = "-enable-pretty-printing",
+              description = "enable pretty printing",
+              ignoreFailures = false,
+            }
+            if not cpp_configuration.setupCommands then cpp_configuration["setupCommands"] = {} end
+            table.insert(cpp_configuration.setupCommands, config_pretty_print)
+          end
+          -- dap.listeners.before.event_terminated["dapui_config"] = nil
+          -- dap.listeners.before.event_exited["dapui_config"] = nil
+        end,
+      }
     end,
   },
 }
