@@ -239,20 +239,10 @@ return {
       { "<Leader>m", function() require("himarkdown").toggle() end, desc = "Toggle HiMarkdown" },
     },
   },
-  -- {
-  --   "lukas-reineke/headlines.nvim",
-  --   dependencies = "nvim-treesitter/nvim-treesitter",
-  --   init = function(_)
-  --     vim.cmd [[
-  --       highlight default link Quote @markup.quote
-  --     ]]
-  --   end,
-  --   opts = {
-  --     markdown = {
-  --       bullets = { "" },
-  --       dash_string = "󰇘",
-  --       fat_headlines = false,
-  --     },
-  --   },
-  -- },
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
 }
