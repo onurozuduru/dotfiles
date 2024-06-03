@@ -50,6 +50,13 @@ return {
         ["<Leader>Q"] = false, -- Disable Exit AstroNvim (not using)
         ["<Leader>w"] = false, -- Disable Save (not using)
         ["<Leader>o"] = false, -- Disable Toggle explorer focus (not using, Toggle explorer is enough)
+        ["gra"] = false, -- Disable LSP code action (already can be accessed from <Leader>l)
+        ["grn"] = false, -- Disable LSP rename (already can be accessed from <Leader>l)
+        ["grr"] = false, -- Disable LSP go to references (will be linked to gr)
+        ["gr"] = {
+          function() vim.lsp.buf.references() end,
+          desc = "References of the current symbol",
+        },
         -- ["<C-s>"] = { "o<esc>k<cr><esc>", desc = "Add newline from normal mode" },
         ["<C-S>"] = { "o<esc><esc>", desc = "Add newline from normal mode" },
         ["<Leader>c"] = { "<cmd>cclose<cr>", desc = "Close files window" },
@@ -64,7 +71,7 @@ return {
         L = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Next buffer" },
         H = { function() require("astrocore.buffer").nav(-vim.v.count1) end, desc = "Previous buffer" },
 
-        -- mappings seen under group name "Buffer"
+        -- mappings seen under kroup name "Buffer"
         ["<Leader>bD"] = {
           function()
             require("astroui.status.heirline").buffer_picker(
@@ -83,6 +90,9 @@ return {
       },
       i = {
         ["<C-S>"] = false, -- Disable force write
+      },
+      x = {
+        ["gra"] = false, -- Disable LSP code action (already can be accessed from <Leader>l)
       },
     },
   },
