@@ -44,7 +44,53 @@ return {
             name = "Launch Gtest",
             type = "cppdbg",
             request = "launch",
-            program = function() return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file") end,
+            program = function()
+              -- Get program with Telescope
+              local actions = require "telescope.actions"
+              local selected = nil
+              local current_coroutine = assert(coroutine.running(), "DAP Program getter needs to be run in coroutine!")
+
+              local get_selection = function(prompt_bufnr)
+                local actions_state = require "telescope.actions.state"
+                local selected_entry = actions_state.get_selected_entry()
+                selected = vim.fn.fnamemodify(selected_entry.path, ":p")
+                actions.close(prompt_bufnr)
+                coroutine.resume(current_coroutine)
+              end
+
+              require("telescope.builtin").find_files {
+                previewer = false,
+                cwd = "./build",
+                find_command = {
+                  "find",
+                  ".",
+                  "-executable",
+                  "-type",
+                  "f",
+                  "!",
+                  "-path",
+                  "*/_deps/*",
+                  "!",
+                  "-path",
+                  "*/CMakeFiles/*",
+                },
+                attach_mappings = function(_, _)
+                  actions.select_default:replace(get_selection)
+                  return true
+                end,
+              }
+
+              -- Pause until get_selection() calls resume
+              coroutine.yield()
+
+              if (not selected) or selected == "" then
+                vim.print "NOTHING SELECTED!"
+              else
+                vim.print("SELECTED: " .. selected)
+              end
+
+              return selected
+            end,
             args = function() return { vim.fn.input "Args: " } end,
             cwd = "${workspaceFolder}",
             stopAtEntry = false,
@@ -58,8 +104,9 @@ return {
             if not cpp_configuration.setupCommands then cpp_configuration["setupCommands"] = {} end
             table.insert(cpp_configuration.setupCommands, config_pretty_print)
           end
-          -- dap.listeners.before.event_terminated["dapui_config"] = nil
-          -- dap.listeners.before.event_exited["dapui_config"] = nil
+          -- Do not close DAP UI after running
+          dap.listeners.before.event_terminated["dapui_config"] = nil
+          dap.listeners.before.event_exited["dapui_config"] = nil
         end,
       }
     end,
