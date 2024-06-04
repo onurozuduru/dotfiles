@@ -46,17 +46,14 @@ return {
     mappings = {
       -- first key is the mode
       n = {
+        ["gl"] = false, -- Hover diagnostics (There is already under <Leader>ld)
+        ["gra"] = false, -- Disable LSP code action (already can be accessed from <Leader>l)
+        ["grn"] = false, -- Disable LSP rename (already can be accessed from <Leader>l)
+        ["grr"] = false, -- Disable LSP go to references (will be linked to gr)
         ["<Leader>/"] = false, -- Disable comment (there is already gc)
         ["<Leader>Q"] = false, -- Disable Exit AstroNvim (not using)
         ["<Leader>w"] = false, -- Disable Save (not using)
         ["<Leader>o"] = false, -- Disable Toggle explorer focus (not using, Toggle explorer is enough)
-        ["gra"] = false, -- Disable LSP code action (already can be accessed from <Leader>l)
-        ["grn"] = false, -- Disable LSP rename (already can be accessed from <Leader>l)
-        ["grr"] = false, -- Disable LSP go to references (will be linked to gr)
-        ["gr"] = {
-          function() vim.lsp.buf.references() end,
-          desc = "References of the current symbol",
-        },
         -- ["<C-s>"] = { "o<esc>k<cr><esc>", desc = "Add newline from normal mode" },
         ["<C-S>"] = { "o<esc><esc>", desc = "Add newline from normal mode" },
         ["<Leader>c"] = { "<cmd>cclose<cr>", desc = "Close files window" },

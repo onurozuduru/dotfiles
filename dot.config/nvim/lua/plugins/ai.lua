@@ -25,7 +25,7 @@ return {
 
       -- Register keybindings to which-key for normal mode
       require("which-key").register {
-        ["<leader>a"] = {
+        ["<Leader>a"] = {
           name = "󰟷 AI",
           d = { "<cmd>Codeium Disable<cr>", "Disable Codeium" },
           e = { "<cmd>Codeium Enable<cr>", "Enable Codeium" },

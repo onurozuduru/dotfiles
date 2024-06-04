@@ -40,66 +40,25 @@ return {
           local dap = require "dap"
           dap.adapters.cppdbg = cppdbg.adapters
           dap.configurations.cpp = cppdbg.configurations
-          table.insert(dap.configurations.cpp, {
-            name = "Launch Gtest",
-            type = "cppdbg",
-            request = "launch",
-            program = function()
-              -- Get program with Telescope
-              local actions = require "telescope.actions"
-              local selected = nil
-              local current_coroutine = assert(coroutine.running(), "DAP Program getter needs to be run in coroutine!")
 
-              local get_selection = function(prompt_bufnr)
-                local actions_state = require "telescope.actions.state"
-                local selected_entry = actions_state.get_selected_entry()
-                selected = vim.fn.fnamemodify(selected_entry.path, ":p")
-                actions.close(prompt_bufnr)
-                coroutine.resume(current_coroutine)
-              end
+          local general_configs = require "plugins.dap.general"
+          for _, config in pairs(general_configs.cpp) do
+            table.insert(dap.configurations.cpp, config)
+          end
 
-              require("telescope.builtin").find_files {
-                previewer = false,
-                cwd = "./build",
-                find_command = {
-                  "find",
-                  ".",
-                  "-executable",
-                  "-type",
-                  "f",
-                  "!",
-                  "-path",
-                  "*/_deps/*",
-                  "!",
-                  "-path",
-                  "*/CMakeFiles/*",
-                },
-                attach_mappings = function(_, _)
-                  actions.select_default:replace(get_selection)
-                  return true
-                end,
-              }
+          local is_ok, extra_configs = pcall(require, "plugins.dap.extra")
+          if is_ok then
+            for _, config in pairs(extra_configs.extra) do
+              table.insert(dap.configurations.cpp, config)
+            end
+          end
 
-              -- Pause until get_selection() calls resume
-              coroutine.yield()
-
-              if (not selected) or selected == "" then
-                vim.print "NOTHING SELECTED!"
-              else
-                vim.print("SELECTED: " .. selected)
-              end
-
-              return selected
-            end,
-            args = function() return { vim.fn.input "Args: " } end,
-            cwd = "${workspaceFolder}",
-            stopAtEntry = false,
-          })
+          -- Add pretty print to all configurations
           for _, cpp_configuration in ipairs(dap.configurations.cpp) do
             local config_pretty_print = {
               text = "-enable-pretty-printing",
               description = "enable pretty printing",
-              ignoreFailures = false,
+              ignoreFailures = true,
             }
             if not cpp_configuration.setupCommands then cpp_configuration["setupCommands"] = {} end
             table.insert(cpp_configuration.setupCommands, config_pretty_print)
