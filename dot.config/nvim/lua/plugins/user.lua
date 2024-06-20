@@ -234,7 +234,8 @@ return {
         dash = { mark = "󰇘" },
       },
     },
-    lazy = false,
+    -- lazy = false,
+    ft = { "markdown", "adoc" },
     keys = function()
       require("which-key").register {
         ["<Leader>m"] = {
@@ -249,7 +250,7 @@ return {
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    ft = { "markdown" },
+    ft = { "markdown", "adoc" },
     build = function() vim.fn["mkdp#util#install"]() end,
     keys = {
       { "<Leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Toggle Markdown Preview" },
