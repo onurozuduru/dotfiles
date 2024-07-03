@@ -3,7 +3,7 @@
 
 PWD=$(pwd -P)
 
-COMMANDS_LIST=('curl' 'wget' 'git' 'ffmpeg' 'ctags' 'tmux' 'xsel' 'clang-tools' 'clang-tidy' 'clang-format' 'ccache' 'gdb' 'autoconf' 'doxygen' 'gcc' 'g++' 'make' 'cmake' 'pipx' 'exa')
+COMMANDS_LIST=('curl' 'wget' 'git' 'ffmpeg' 'tmux' 'xsel' 'clang-tools' 'clang-tidy' 'clang-format' 'ccache' 'gdb' 'autoconf' 'doxygen' 'gcc' 'g++' 'make' 'cmake' 'pipx' 'exa')
 NOT_FOUND=()
 PACKAGES_LIST=('build-essential' 'python3-venv' 'python3-pip' 'python3-dev' 'autotools-dev' 'libboost-all-dev' 'software-properties-common' 'openssh-client' 'imagemagick')
 PIP_LIST=('cpplint' 'cppclean' 'pynvim' 'python-language-server' 'ipython')
@@ -52,11 +52,12 @@ install_from_github() {
 		sudo dpkg -i "$download_name"
 	else
 		local bin_name="${download_name%.appimage}"
-		mkdir "$bin_name"
-		mv "$download_name" "$bin_name/$download_name"
-		chmod +x "$bin_name/$download_name"
-		"$bin_name/$download_name" --appimage-extract
-		ln -s "$bin_name/$download_name/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name"
+		local bin_dir="$HOME/${bin_name}"
+		mkdir "$bin_dir"
+		mv "$download_name" "$bin_dir/$download_name"
+		chmod +x "$bin_dir/$download_name"
+		cd "${bin_dir}" && "./$download_name" --appimage-extract && cd -
+		ln -s "$bin_dir/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name"
 	fi
 }
 
@@ -70,8 +71,13 @@ install_package() {
 	fi
 	PKG_OK=$({ dpkg-query -W --showformat='${Status}\n' "$1" | grep "install ok installed"; } 2>&1)
 	if [ -z "$PKG_OK" ]; then
-		log_this "Installing $1"
-		sudo apt-get -qq install -y "$1" >/dev/null
+		read -p "Do want to install $1? " -r
+		# Line break
+		echo
+		if [[ $REPLY =~ ^[Yy][Ee]*[Ss]*$ ]]; then
+			log_this "Installing $1"
+			sudo apt-get -qq install -y "$1" >/dev/null
+		fi
 	else
 		log_this "$1 already installed!"
 	fi
@@ -80,8 +86,13 @@ install_package() {
 ## Pass given argument to apt
 # $1: package name
 install_with_apt() {
-	log_this "Installing with apt: $1"
-	sudo apt install "$1"
+	read -p "Do want to install $1? " -r
+	# Line break
+	echo
+	if [[ $REPLY =~ ^[Yy][Ee]*[Ss]*$ ]]; then
+		log_this "Installing with apt: $1"
+		sudo apt install -y "$1"
+	fi
 }
 
 ## Pass given argument to pip
@@ -89,22 +100,6 @@ install_with_apt() {
 install_with_pipx() {
 	log_this "Installing with pipx: $1"
 	pipx install "$1"
-}
-
-tmux_plugins() {
-	log_this "Installing plugin manager for tmux"
-	export TMUX_PLUGIN_MANAGER_PATH="${HOME}/.tmux/plugins"
-	git clone https://github.com/tmux-plugins/tpm ${TMUX_PLUGIN_MANAGER_PATH}/tpm >/dev/null 2>&1
-	log_this "Installing plugins"
-	${TMUX_PLUGIN_MANAGER_PATH}/tpm/scripts/install_plugins.sh >/dev/null 2>&1
-	tmux source ~/.tmux.conf
-}
-
-install_fzf() {
-	if ! installed fzf; then
-		git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-		~/.fzf/install --no-zsh --no-fish
-	fi
 }
 
 for command in "${COMMANDS_LIST[@]}"; do
@@ -129,7 +124,7 @@ for i in "${PACKAGES_LIST[@]}"; do
 	go_there_do_that "$PWD" install_package "$i"
 done
 
-log_this "Installing PIP:"
+log_this "Installing with PIP:"
 echo "${PIP_LIST[@]}"
 log_this "---"
 
@@ -155,5 +150,14 @@ if ! installed npm; then
 	sudo apt-get update && sudo apt-get install nodejs -y
 fi
 
-install_fzf
-tmux_plugins
+if ! installed fzf; then
+	git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+	~/.fzf/install --no-zsh --no-fish
+fi
+
+log_this "Installing plugin manager for tmux"
+export TMUX_PLUGIN_MANAGER_PATH="${HOME}/.tmux/plugins"
+git clone https://github.com/tmux-plugins/tpm "${TMUX_PLUGIN_MANAGER_PATH}/tpm" >/dev/null 2>&1
+log_this "Installing plugins"
+"${TMUX_PLUGIN_MANAGER_PATH}/tpm/scripts/install_plugins.sh" >/dev/null 2>&1
+tmux source ~/.tmux.conf
