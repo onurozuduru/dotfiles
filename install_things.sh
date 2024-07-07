@@ -8,14 +8,15 @@ NOT_FOUND=()
 PACKAGES_LIST=('build-essential' 'python3-venv' 'python3-pip' 'python3-dev' 'autotools-dev' 'libboost-all-dev' 'software-properties-common' 'openssh-client' 'imagemagick')
 PIP_LIST=('cpplint' 'cppclean' 'pynvim' 'python-language-server' 'ipython')
 
+########## Helper Functions
+
 ## Goes $1 and does $2
 ## $1: directory to go
 ## $2: command to execute in dir
 go_there_do_that() {
 	echo "---------------------------------------BEGIN------------------------------------"
 	# shellcheck disable=2145
-	echo ">>>$@>>>"
-	echo "<<<>>>"
+	echo "Args: $@"
 	cd "$1" || echo "Failed: cd $1"
 	shift && "$@"
 	echo "----------------------------------------END-------------------------------------"
@@ -23,7 +24,19 @@ go_there_do_that() {
 
 ## $1: message
 log_this() {
-	echo "*** $1 ***"
+	echo ">>> $1"
+}
+
+## Asks if to install $1 then applies install command $2
+## $1: Package to install
+## $2: Install command
+first_ask_then_do() {
+	read -p "Do want to install $1? [Y/n]" -r
+	echo # Empty line after user input
+	if [[ $REPLY =~ ^[Yy][Ee]*[Ss]*$ ]]; then
+		log_this "Installing: $1"
+		shift && "$@"
+	fi
 }
 
 ## $1: command
@@ -56,7 +69,9 @@ install_from_github() {
 		mkdir "$bin_dir"
 		mv "$download_name" "$bin_dir/$download_name"
 		chmod +x "$bin_dir/$download_name"
-		cd "${bin_dir}" && "./$download_name" --appimage-extract && cd -
+		# shellcheck disable=2015
+		cd "${bin_dir}" && "./$download_name" --appimage-extract >/dev/null && cd - ||
+			log_this "!!! A problem occured while installing $bin_dir"
 		ln -s "$bin_dir/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name"
 	fi
 }
@@ -64,35 +79,25 @@ install_from_github() {
 ### Check if package exist and install
 ## $1: package name
 install_package() {
-	PKG_AV=$(sudo apt-cache search "$1")
+	local package_name="$1"
+	PKG_AV=$(sudo apt-cache search "$package_name")
 	if [ -z "$PKG_AV" ]; then
-		log_this "!!! Package $1 is not available for installation!"
+		log_this "!!! Package $package_name is not available for installation!"
 		return
 	fi
-	PKG_OK=$({ dpkg-query -W --showformat='${Status}\n' "$1" | grep "install ok installed"; } 2>&1)
+	PKG_OK=$({ dpkg-query -W --showformat='${Status}\n' "$package_name" | grep "install ok installed"; } 2>&1)
 	if [ -z "$PKG_OK" ]; then
-		read -p "Do want to install $1? " -r
-		# Line break
-		echo
-		if [[ $REPLY =~ ^[Yy][Ee]*[Ss]*$ ]]; then
-			log_this "Installing $1"
-			sudo apt-get -qq install -y "$1" >/dev/null
-		fi
+		first_ask_then_do "$package_name" sudo apt-get -qq install -y "$package_name" >/dev/null
 	else
-		log_this "$1 already installed!"
+		log_this "$package_name already installed!"
 	fi
 }
 
 ## Pass given argument to apt
 # $1: package name
 install_with_apt() {
-	read -p "Do want to install $1? " -r
-	# Line break
-	echo
-	if [[ $REPLY =~ ^[Yy][Ee]*[Ss]*$ ]]; then
-		log_this "Installing with apt: $1"
-		sudo apt install -y "$1"
-	fi
+	local package_name="$1"
+	first_ask_then_do "$package_name" sudo apt install -y "$package_name"
 }
 
 ## Pass given argument to pip
@@ -101,6 +106,8 @@ install_with_pipx() {
 	log_this "Installing with pipx: $1"
 	pipx install "$1"
 }
+
+########## Start installing...
 
 for command in "${COMMANDS_LIST[@]}"; do
 	echo "Checking command $command..."
@@ -124,7 +131,7 @@ for i in "${PACKAGES_LIST[@]}"; do
 	go_there_do_that "$PWD" install_package "$i"
 done
 
-log_this "Installing with PIP:"
+log_this "Installing with PIPX:"
 echo "${PIP_LIST[@]}"
 log_this "---"
 
