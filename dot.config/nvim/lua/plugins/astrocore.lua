@@ -40,6 +40,7 @@ return {
         templates_directory = "~/file_templates",
         templates_global_name_prefix = "tpl",
         username = "Onur Ozuduru",
+        markdown_fenced_languages = { "plantuml" },
       },
     },
     -- Mappings can be configured through AstroCore as well.
@@ -80,6 +81,12 @@ return {
         ["<Leader>tp"] = {
           function() require("astrocore").toggle_term_cmd { cmd = "ipython", size = 10, direction = "horizontal" } end,
           desc = "ToggleTerm ipython",
+        },
+        ["<Leader>mu"] = {
+          function()
+            if vim.bo.filetype == "markdown" then vim.cmd "TSBufToggle highlight" end
+          end,
+          desc = "Toggle syntax for PlantUML",
         },
       },
       t = {
