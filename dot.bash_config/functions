@@ -57,13 +57,13 @@ nvimfzf () {
 
     if [ -n "$search_all" ]; then
         nvim $(find "$search_path" | fzf --height 40% --layout reverse --info inline --border \
-            --preview 'batcat --style=numbers --color=always --line-range :500 {}' \
+            --preview 'cat --number {}' \
             --preview-window right:noborder --color \
             'fg:#bbccdd,fg+:#ddeeff,bg:#334455,preview-bg:#223344,border:#778899' \
             --bind 'shift-up:preview-up,shift-down:preview-down')
     else
         nvim $(find "$search_path" -not -path '*/\.*' | fzf --height 40% --layout reverse --info inline --border \
-            --preview 'batcat --style=numbers --color=always --line-range :500 {}' \
+            --preview 'cat --number {}' \
             --preview-window right:noborder --color \
             'fg:#bbccdd,fg+:#ddeeff,bg:#334455,preview-bg:#223344,border:#778899' \
             --bind 'shift-up:preview-up,shift-down:preview-down')
@@ -77,7 +77,7 @@ open() {
         search_path="$1"
     fi
     local file=$(find "$search_path" -not -path '*/\.*' | fzf --height 40% --layout reverse --info inline --border \
-        --preview 'batcat --style=numbers --color=always --line-range :500 {}' \
+        --preview 'cat --number {}' \
         --preview-window right:noborder --color \
         'fg:#bbccdd,fg+:#ddeeff,bg:#334455,preview-bg:#223344,border:#778899' \
         --bind 'shift-up:preview-up,shift-down:preview-down')
