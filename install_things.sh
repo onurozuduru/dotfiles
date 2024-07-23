@@ -1,4 +1,14 @@
 #!/bin/bash
+###############################################################################
+#File: install_things.sh
+#
+#License: MIT
+#
+#Copyright (C) 2024 Onur Ozuduru
+#
+#Follow Me!
+#  github: github.com/onurozuduru
+###############################################################################
 # shellcheck disable=2155
 
 PWD=$(pwd -P)
@@ -7,6 +17,57 @@ COMMANDS_LIST=('curl' 'wget' 'git' 'ffmpeg' 'tmux' 'xsel' 'clang-tools' 'clang-t
 NOT_FOUND=()
 PACKAGES_LIST=('build-essential' 'python3-venv' 'python3-pip' 'python3-dev' 'autotools-dev' 'libboost-all-dev' 'software-properties-common' 'openssh-client' 'imagemagick')
 PIP_LIST=('cpplint' 'cppclean' 'pynvim' 'python-language-server' 'ipython')
+
+YES_TO_ALL=""
+
+print_help() {
+	echo "Usage: $0 [-l|--list] [-y] [-h]"
+	echo -e "Install necessary packages for developer environment setup on Ubuntu/Debian."
+	echo -e "\t-l,--list\tList everything this script would attempt to install."
+	echo -e "\t-y\t\tConfirm all."
+	echo -e "\t-h,--help\tDisplay help."
+}
+
+list_all() {
+	echo "COMMANDS: " "${COMMANDS_LIST[@]}"
+	echo "PACKAGES: " "${PACKAGES_LIST[@]}"
+	echo "PIP PACKAGES: " "${PIP_LIST[@]}"
+}
+
+### Get params
+# -l long options (--help)
+# -o short options (-h)
+# : options takes argument (--option1 arg1)
+# $@ pass all command line parameters.
+set -e
+params=$(getopt -l "list,help" -o "lyh" -- "$@")
+
+eval set -- "$params"
+
+while true; do
+	case $1 in
+	-h | --help)
+		print_help
+		exit 0
+		;;
+	-l | --list)
+		list_all
+		exit 0
+		;;
+	-y)
+		YES_TO_ALL="YEAHHHHHHH"
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		print_help
+		exit 0
+		;;
+	esac
+	shift
+done
 
 ########## Helper Functions
 
@@ -31,9 +92,11 @@ log_this() {
 ## $1: Package to install
 ## $2: Install command
 first_ask_then_do() {
-	read -p "Do want to install $1? [Y/n]" -r
-	echo # Empty line after user input
-	if [[ $REPLY =~ ^[Yy][Ee]*[Ss]*$ ]]; then
+	if [ -z "$YES_TO_ALL" ]; then
+		read -p "Do want to install $1? [Y/n]" -r
+		echo # Empty line after user input
+	fi
+	if [[ -n "$YES_TO_ALL" || $REPLY =~ ^[Yy][Ee]*[Ss]*$ ]]; then
 		log_this "Installing: $1"
 		shift && "$@"
 	fi
@@ -139,6 +202,9 @@ for i in "${PIP_LIST[@]}"; do
 	go_there_do_that "$PWD" install_with_pipx "$i"
 done
 
+## The special ones that cannot be installed properly from Debian/Ubuntu source
+## Up to date packages are hard!
+
 # Install ripgrep
 if ! installed rg; then
 	install_from_github BurntSushi ripgrep deb
@@ -149,6 +215,12 @@ if ! installed nvim; then
 	install_from_github neovim neovim appimage
 fi
 
+if ! installed fzf; then
+	git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+	~/.fzf/install --no-zsh --no-fish
+fi
+
+# Mason uses node for some programs
 if ! installed npm; then
 	sudo apt-get update && sudo apt-get install -y ca-certificates curl gnupg
 	curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
@@ -157,14 +229,9 @@ if ! installed npm; then
 	sudo apt-get update && sudo apt-get install nodejs -y
 fi
 
-if ! installed fzf; then
-	git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-	~/.fzf/install --no-zsh --no-fish
-fi
-
 log_this "Installing plugin manager for tmux"
 export TMUX_PLUGIN_MANAGER_PATH="${HOME}/.tmux/plugins"
-git clone https://github.com/tmux-plugins/tpm "${TMUX_PLUGIN_MANAGER_PATH}/tpm" >/dev/null 2>&1
+git clone https://github.com/tmux-plugins/tpm "${TMUX_PLUGIN_MANAGER_PATH}/tpm"
 log_this "Installing plugins"
 "${TMUX_PLUGIN_MANAGER_PATH}/tpm/scripts/install_plugins.sh" >/dev/null 2>&1
 tmux source ~/.tmux.conf
