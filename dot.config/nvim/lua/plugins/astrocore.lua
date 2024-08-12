@@ -88,6 +88,7 @@ return {
           end,
           desc = "Toggle syntax for PlantUML",
         },
+        ["gx"] = { desc = "Opens filepath or URI under cursor" }, -- Make the desc shorter
       },
       t = {
         ["<esc>"] = { "<C-\\><C-n>", desc = "Escape to terminal normal mode" },

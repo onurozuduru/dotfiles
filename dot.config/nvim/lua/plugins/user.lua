@@ -237,10 +237,8 @@ return {
     -- lazy = false,
     ft = { "markdown" },
     keys = function()
-      require("which-key").register {
-        ["<Leader>m"] = {
-          name = "󰍔 Markdown",
-        },
+      require("which-key").add {
+        { "<Leader>m", group = "󰍔 Markdown" },
       }
       return {
         { "<Leader>mh", function() require("himarkdown").toggle() end, desc = "Toggle HiMarkdown" },
@@ -255,5 +253,12 @@ return {
     keys = {
       { "<Leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Toggle Markdown Preview" },
     },
+  },
+  {
+    "folke/which-key.nvim",
+    opts = function(_, opts)
+      if not opts.win then opts.win = {} end
+      opts.win.no_overlap = false
+    end,
   },
 }

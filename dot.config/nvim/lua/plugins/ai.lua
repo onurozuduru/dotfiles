@@ -24,16 +24,14 @@ return {
       -- })
 
       -- Register keybindings to which-key for normal mode
-      require("which-key").register {
-        ["<Leader>a"] = {
-          name = "󰟷 AI",
-          d = { "<cmd>Codeium Disable<cr>", "Disable Codeium" },
-          e = { "<cmd>Codeium Enable<cr>", "Enable Codeium" },
-          b = { "<cmd>Codeium DisableBuffer<cr>", "Buffer disable Codeium" },
-          B = { "<cmd>Codeium EnableBuffer<cr>", "Buffer enable Codeium" },
-          s = { "<cmd>lua print(vim.fn['codeium#GetStatusString']())<cr>", "Status" },
-          C = { "<cmd>call codeium#Chat()<cr>", "Chat" },
-        },
+      require("which-key").add {
+        { "<Leader>a", group = "󰟷 AI" },
+        { "<Leader>aB", "<cmd>Codeium EnableBuffer<cr>", desc = "Buffer enable Codeium" },
+        { "<Leader>aC", "<cmd>call codeium#Chat()<cr>", desc = "Chat" },
+        { "<Leader>ab", "<cmd>Codeium DisableBuffer<cr>", desc = "Buffer disable Codeium" },
+        { "<Leader>ad", "<cmd>Codeium Disable<cr>", desc = "Disable Codeium" },
+        { "<Leader>ae", "<cmd>Codeium Enable<cr>", desc = "Enable Codeium" },
+        { "<Leader>as", "<cmd>lua print(vim.fn['codeium#GetStatusString']())<cr>", desc = "Status" },
       }
 
       -- Highlight suggestions with different than comment
