@@ -241,7 +241,11 @@ return {
         { "<Leader>m", group = "󰍔 Markdown" },
       }
       return {
-        { "<Leader>mh", function() require("himarkdown").toggle() end, desc = "Toggle HiMarkdown" },
+        {
+          "<Leader>mh",
+          function() require("himarkdown").toggle() end,
+          desc = "Toggle HiMarkdown",
+        },
       }
     end,
   },
@@ -249,7 +253,10 @@ return {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },
-    build = function() vim.fn["mkdp#util#install"]() end,
+    build = function()
+      require("lazy").load { plugins = { "markdown-preview.nvim" } }
+      vim.fn["mkdp#util#install"]()
+    end,
     keys = {
       { "<Leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Toggle Markdown Preview" },
     },
@@ -259,6 +266,8 @@ return {
     opts = function(_, opts)
       if not opts.win then opts.win = {} end
       opts.win.no_overlap = false
+      if not opts.triggers then opts.triggers = {} end
+      opts.triggers = { "<auto>", mode = "nixsotc" }
     end,
   },
 }

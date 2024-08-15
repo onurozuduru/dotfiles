@@ -10,7 +10,8 @@ return {
       -- add more things to the ensure_installed table protecting against community packs modifying it
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
         "lua_ls",
-        -- add more arguments for adding more language servers
+        "clangd",
+        "bashls",
       })
     end,
   },
@@ -22,7 +23,8 @@ return {
       -- add more things to the ensure_installed table protecting against community packs modifying it
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
         "stylua",
-        -- add more arguments for adding more null-ls sources
+        "shellcheck",
+        "cmakelang",
       })
     end,
   },
@@ -32,8 +34,7 @@ return {
     opts = function(_, opts)
       -- add more things to the ensure_installed table protecting against community packs modifying it
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        -- "python",
-        -- add more arguments for adding more debuggers
+        "cpptools",
       })
       opts.handlers = {
         cppdbg = function(cppdbg)
