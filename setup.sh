@@ -157,6 +157,7 @@ if [[ ! -d "${HOME}/.tmux/plugins" ]]; then
 	log_this "Installing plugins"
 	"${TMUX_PLUGIN_MANAGER_PATH}/tpm/scripts/install_plugins.sh" >/dev/null 2>&1
 	tmux source ~/.tmux.conf
+	"${TMUX_PLUGIN_MANAGER_PATH}/tpm/scripts/install_plugins.sh" >/dev/null 2>&1
 fi
 
 ## Setup dotfiles
