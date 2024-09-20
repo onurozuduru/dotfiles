@@ -30,6 +30,9 @@ dap_configs["helpers"] = {
         "!",
         "-path",
         "*/CMakeFiles/*",
+        "!",
+        "-path",
+        "*/*.so*",
       },
       attach_mappings = function(_, _)
         actions.select_default:replace(get_selection)
