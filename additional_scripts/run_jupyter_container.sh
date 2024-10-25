@@ -19,11 +19,13 @@ HOST_WORK_DIR=""
 CONTAINER_WORK_DIR="/home/jovyan/work"
 CONTAINER_IMAGE=""
 CONTAINER_PORT="8888"
+CONTAINER_TIME_ZONE=""
 HOST_PORT="8888"
 ARGS_CONTAINER_NAME=""
 ARGS_CONTAINER_REMOVE=""
 
 COMMAND_ARGS=""
+ENV_ARGS=""
 
 EXISTING_CONTAINER_NAMES=$(podman ps -a --format "{{.Names}}")
 EXISTING_CONTAINERS=$(podman ps -a --format "{{.Names}} {{.Image}}" | column -t -o':\t' -N "Container Name,Base Image")
@@ -91,6 +93,7 @@ get_args_name_or_rm() {
 	local prompt="\n------------------\n"
 	if [[ -n "${EXISTING_CONTAINERS}" ]]; then
 		prompt="$prompt\nExisting containers:\n${EXISTING_CONTAINERS}\n"
+		prompt="$prompt\nYou can choose to start one of the existing containers or create a new one by entering a unique name!\n"
 		prompt="$prompt\nUse name from the above list, if you want to start one of the existing containers!\n"
 	fi
 	prompt="$prompt\nDon't give name to remove container on exit!\n"
@@ -106,6 +109,12 @@ get_args_name_or_rm() {
 		COMMAND_ARGS="--rm"
 	else
 		set_name "$user_input"
+	fi
+}
+
+set_time_zone_if_possible() {
+	if [[ -f "/etc/timezone" ]]; then
+		CONTAINER_TIME_ZONE="-e TZ=$(cat /etc/timezone)"
 	fi
 }
 
@@ -136,7 +145,7 @@ while true; do
 		;;
 	--name)
 		shift
-		ARGS_CONTAINER_NAME="--name $1"
+		ARGS_CONTAINER_NAME="$1"
 		set_name "$ARGS_CONTAINER_NAME"
 		;;
 	--rm)
@@ -159,7 +168,7 @@ if [[ -z "${HOST_WORK_DIR}" ]]; then
 	HOST_WORK_DIR="$PWD"
 fi
 
-if [[ -z "${CONTAINER_IMAGE}" ]]; then
+if [[ -z "${CONTAINER_IMAGE}" && -z "${IS_ONLY_START}" ]]; then
 	get_image
 fi
 
@@ -175,10 +184,18 @@ fi
 echo "WORKDIR: $HOST_WORK_DIR"
 echo "IMAGE: $CONTAINER_IMAGE"
 
+set_time_zone_if_possible
+
+if [[ -n "${CONTAINER_TIME_ZONE}" ]]; then
+	ENV_ARGS="$ENV_ARGS $CONTAINER_TIME_ZONE"
+fi
+
+ENV_ARGS="$ENV_ARGS -e LC_ALL=en_US.UTF-8 -e LANG=en_US.UTF-8 -e GRANT_SUDO=yes"
+
 if [[ -n "${IS_ONLY_START}" ]]; then
 	RUN_CMD=(podman start $COMMAND_ARGS)
 else
-	RUN_CMD=(podman run -it $COMMAND_ARGS -p "$HOST_PORT:$CONTAINER_PORT" -v "$HOST_WORK_DIR:$CONTAINER_WORK_DIR" --userns=keep-id --device "nvidia.com/gpu=all" "$CONTAINER_IMAGE")
+	RUN_CMD=(podman run -it $COMMAND_ARGS $ENV_ARGS -p "$HOST_PORT:$CONTAINER_PORT" -v "$HOST_WORK_DIR:$CONTAINER_WORK_DIR" --user root --userns=keep-id --device "nvidia.com/gpu=all" "$CONTAINER_IMAGE")
 fi
 
 echo "${RUN_CMD[@]}"
