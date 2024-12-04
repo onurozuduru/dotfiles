@@ -31,6 +31,7 @@ return {
         spell = false, -- sets vim.opt.spell
         signcolumn = "auto", -- sets vim.opt.signcolumn to auto
         wrap = false, -- sets vim.opt.wrap
+        completeopt = { "menu", "menuone", "noselect", "noinsert", "popup" }, -- might not be needed in v0.11
       },
       g = { -- vim.g.<key>
         -- configure global vim variables (vim.g)
