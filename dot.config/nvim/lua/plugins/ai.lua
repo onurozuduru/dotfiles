@@ -44,7 +44,7 @@ return {
 					return string.match(vim.fs.basename(vim.api.nvim_buf_get_name(0)), "%.adoc")
 				end,
 				sh = function()
-					return string.match(vim.fs.basename(vim.api.nvim_buf_get_name(0)), "^%.env.*")
+					return not string.match(vim.fs.basename(vim.api.nvim_buf_get_name(0)), "%.env.*")
 				end,
 			},
 		},
