@@ -33,3 +33,7 @@ if [ -x "$(command -v fzf)" ]; then
     # Directly execute the selected after search in history
     alias hh='h | sed "s/^[ \t]*//" | cut -d " " -f3- | bash'
 fi
+
+if [ -x "$(command -v git)" ]; then
+    alias ggrep='git grep -I --color --line-number'
+fi
