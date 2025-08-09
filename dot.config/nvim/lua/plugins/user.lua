@@ -2,35 +2,41 @@
 return {
   { "max397574/better-escape.nvim", enabled = false },
   { "stevearc/resession.nvim", enabled = false },
+  { "s1n7ax/nvim-window-picker", enabled = false },
+  { "folke/neoconf.nvim", enabled = false },
   "aperezdc/vim-template",
   "tpope/vim-surround",
   "tpope/vim-fugitive",
   "powerman/vim-plugin-AnsiEsc",
   "wellle/targets.vim",
   "p00f/clangd_extensions.nvim",
-  -- "LnL7/vim-nix",
   {
-    "goolord/alpha-nvim",
-    opts = function(_, opts)
-      -- customize the dashboard header
-      opts.section.header.val = {
-        "⬛⬛⬛⬛⬛⬛🟦🟦🟦🟦⬛⬛⬛⬛⬛⬛",
-        "⬛⬛⬛⬛🟦🟦🟦🟦🟦🟦🟦🟦⬛⬛⬛⬛",
-        "⬛⬛⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛⬛⬛",
-        "⬛⬛🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦🟦⬛⬛",
-        "⬛⬛🌫️🌫️🌫️🌫️🟦🟦🌫️🌫️🌫️🌫️🟦🟦⬛⬛",
-        "⬛⬛🟦🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦⬛⬛",
-        "⬛🟦🟦🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦🟦⬛",
-        "⬛🟦🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦🟦🟦⬛",
-        "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
-        "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
-        "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
-        "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
-        "⬛🟦🟦⬛🟦🟦🟦⬛⬛🟦🟦🟦⬛🟦🟦⬛",
-        "⬛🟦⬛⬛⬛🟦🟦⬛⬛🟦🟦⬛⬛⬛🟦⬛",
-      }
-      return opts
-    end,
+    "folke/snacks.nvim",
+    opts = {
+      dashboard = {
+        preset = {
+          header = table.concat({
+            "⬛⬛⬛⬛⬛⬛🟦🟦🟦🟦⬛⬛⬛⬛⬛⬛",
+            "⬛⬛⬛⬛🟦🟦🟦🟦🟦🟦🟦🟦⬛⬛⬛⬛",
+            "⬛⬛⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛⬛⬛",
+            "⬛⬛🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦🟦⬛⬛",
+            "⬛⬛🌫️🌫️🌫️🌫️🟦🟦🌫️🌫️🌫️🌫️🟦🟦⬛⬛",
+            "⬛⬛🟦🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦⬛⬛",
+            "⬛🟦🟦🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦🟦⬛",
+            "⬛🟦🟦🌫️🌫️🟦🟦🟦🟦🌫️🌫️🟦🟦🟦🟦⬛",
+            "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
+            "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
+            "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
+            "⬛🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦⬛",
+            "⬛🟦🟦⬛🟦🟦🟦⬛⬛🟦🟦🟦⬛🟦🟦⬛",
+            "⬛🟦⬛⬛⬛🟦🟦⬛⬛🟦🟦⬛⬛⬛🟦⬛",
+          }, "\n"),
+        },
+      },
+      picker = {
+        ui_select = true,
+      },
+    },
   },
   {
     "folke/todo-comments.nvim",
@@ -62,16 +68,6 @@ return {
       },
     },
   },
-  -- Already included in astro
-  -- {
-  --   "L3MON4D3/LuaSnip",
-  --   config = function(plugin, opts)
-  --     require "astronvim.plugins.configs.luasnip"(plugin, opts) -- include the default astronvim config that calls the setup call
-  --     -- add more custom luasnip configuration such as filetype extend or custom snippets
-  --     -- local luasnip = require "luasnip"
-  --     -- luasnip.store_selection_keys = nil
-  --   end,
-  -- },
   {
     "AstroNvim/astrotheme",
     -- version = "^1.7.0",
@@ -213,14 +209,14 @@ return {
         filtered_items = {
           hide_dotfiles = false,
         },
-        commands = {
-          expand_all_nodes = function(state)
-            -- Solution: https://github.com/nvim-neo-tree/neo-tree.nvim/issues/777#issuecomment-1685959836
-            local node = state.tree:get_node()
-            local filesystem_commands = require "neo-tree.sources.filesystem.commands"
-            filesystem_commands.expand_all_nodes(state, node)
-          end,
-        },
+        -- commands = {
+        --   expand_all_nodes = function(state)
+        --     -- Solution: https://github.com/nvim-neo-tree/neo-tree.nvim/issues/777#issuecomment-1685959836
+        --     local node = state.tree:get_node()
+        --     local filesystem_commands = require "neo-tree.sources.filesystem.commands"
+        --     filesystem_commands.expand_all_nodes(state, node)
+        --   end,
+        -- },
       },
     },
   },

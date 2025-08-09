@@ -86,7 +86,7 @@ return {
       answer_header = " ",
       error_header = " ",
       auto_follow_cursor = true,
-      highlight_selection = false,
+      highlight_selection = true,
       show_help = true, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
       clear_chat_on_new_prompt = false, -- Clears chat on every new prompt
       -- context = "buffers",
@@ -130,9 +130,6 @@ return {
         show_info = {
           normal = "gmi",
         },
-        show_context = {
-          normal = "gmc",
-        },
         show_help = {
           normal = "gmh",
         },
@@ -140,9 +137,8 @@ return {
     },
     config = function(_, opts)
       local chat = require "CopilotChat"
-      local select = require "CopilotChat.select"
       -- Use unnamed register for the selection
-      opts.selection = select.unnamed
+      -- opts.selection = select.unnamed
 
       opts.system_prompt = (function()
         local base_prompt = require("CopilotChat.config.prompts").COPILOT_INSTRUCTIONS.system_prompt
@@ -163,31 +159,6 @@ return {
       end)()
 
       chat.setup(opts)
-
-      -- Toggle CopilotChat with visual selection
-      vim.api.nvim_create_user_command(
-        "CopilotChatVisual",
-        function(args) chat.ask(args.args, { selection = select.visual }) end,
-        { nargs = "*", range = true }
-      )
-
-      -- Inline chat with Copilot
-      vim.api.nvim_create_user_command(
-        "CopilotChatInline",
-        function(args)
-          chat.ask(args.args, {
-            selection = select.visual,
-            window = {
-              layout = "float",
-              relative = "cursor",
-              width = 1,
-              height = 0.4,
-              row = 1,
-            },
-          })
-        end,
-        { nargs = "*", range = true }
-      )
 
       -- Custom buffer for CopilotChat
       vim.api.nvim_create_autocmd("BufEnter", {
@@ -229,17 +200,10 @@ return {
       -- Chat with Copilot in visual mode
       {
         "<Leader>av",
-        ":CopilotChatVisual<cr>",
+        ":CopilotChat<cr>",
         mode = "x",
         desc = "CopilotChat - Open in vertical split",
       },
-      {
-        "<Leader>ax",
-        ":CopilotChatInline<cr>",
-        mode = "x",
-        desc = "CopilotChat - Inline chat",
-      },
-      -- Custom input for CopilotChat
       {
         "<Leader>ai",
         function()
@@ -254,33 +218,13 @@ return {
           local input = vim.fn.input "Quick Chat: "
           if input ~= "" then
             require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
-            -- vim.cmd("CopilotChatBuffer " .. input)
           end
         end,
         desc = "CopilotChat - Quick chat",
       },
-      -- Show help actions with telescope
-      {
-        "<Leader>ah",
-        function()
-          local actions = require "CopilotChat.actions"
-          require("CopilotChat.integrations.telescope").pick(actions.help_actions())
-        end,
-        desc = "CopilotChat - Help actions",
-      },
-      -- Show prompts actions with telescope
       {
         "<Leader>ap",
-        function()
-          local actions = require "CopilotChat.actions"
-          require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
-        end,
-        desc = "CopilotChat - Prompt actions",
-      },
-      {
-        "<Leader>ap",
-        -- Workaround to pass selection
-        ":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
+        ":CopilotChatPrompts<cr>",
         mode = "x",
         desc = "CopilotChat - Prompt actions",
       },

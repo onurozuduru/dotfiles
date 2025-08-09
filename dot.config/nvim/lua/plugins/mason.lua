@@ -2,40 +2,32 @@
 
 ---@type LazySpec
 return {
-  -- use mason-lspconfig to configure LSP installations
+  -- use mason-tool-installer for automatically installing Mason packages
   {
-    "williamboman/mason-lspconfig.nvim",
-    -- overrides `require("mason-lspconfig").setup(...)`
-    opts = function(_, opts)
-      -- add more things to the ensure_installed table protecting against community packs modifying it
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        "lua_ls",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    -- overrides `require("mason-tool-installer").setup(...)`
+    opts = {
+      -- Make sure to use the names found in `:Mason`
+      ensure_installed = {
+        -- install language servers
+        "lua-language-server",
         "clangd",
-        "bashls",
-      })
-    end,
-  },
-  -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
-  {
-    "jay-babu/mason-null-ls.nvim",
-    -- overrides `require("mason-null-ls").setup(...)`
-    opts = function(_, opts)
-      -- add more things to the ensure_installed table protecting against community packs modifying it
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
+        "bash-language-server",
+
+        -- install formatters
         "stylua",
         "shellcheck",
-      })
-    end,
+
+        -- install debuggers
+        "cpptools",
+      },
+    },
   },
   {
     "jay-babu/mason-nvim-dap.nvim",
     -- overrides `require("mason-nvim-dap").setup(...)`
-    opts = function(_, opts)
-      -- add more things to the ensure_installed table protecting against community packs modifying it
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        "cpptools",
-      })
-      opts.handlers = {
+    opts = {
+      handlers = {
         cppdbg = function(cppdbg)
           local dap = require "dap"
           dap.adapters.cppdbg = cppdbg.adapters
@@ -67,7 +59,20 @@ return {
           dap.listeners.before.event_terminated["dapui_config"] = nil
           dap.listeners.before.event_exited["dapui_config"] = nil
         end,
-      }
+      },
+    },
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    config = function(plugin, opts)
+      -- run default AstroNvim nvim-dap-ui configuration function
+      require "astronvim.plugins.configs.nvim-dap-ui"(plugin, opts)
+
+      -- disable dap events that are created
+      local dap = require "dap"
+      -- dap.listeners.after.event_initialized.dapui_config = nil
+      dap.listeners.before.event_terminated.dapui_config = nil
+      dap.listeners.before.event_exited.dapui_config = nil
     end,
   },
 }

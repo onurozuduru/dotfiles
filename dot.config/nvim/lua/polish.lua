@@ -44,13 +44,14 @@ vim.api.nvim_create_autocmd({ "User" }, {
   end,
 })
 
--- Below are mapped from vim script so needs to be removed in here
--- Disable <Leader>swp Save win position (not using)
--- Disable <Leader>rwp Restore win position (not using)
-vim.cmd [[
-unmap <Leader>swp
-unmap <Leader>rwp
-]]
+-- Below is now disabled with g:no_cecutil_maps, keeping this as backup
+-- -- Below are mapped from vim script so needs to be removed in here
+-- -- Disable <Leader>swp Save win position (not using)
+-- -- Disable <Leader>rwp Restore win position (not using)
+-- vim.cmd [[
+-- unmap <Leader>swp
+-- unmap <Leader>rwp
+-- ]]
 
 -- -- Hack to make mason to patch shared lib in Nix
 -- require("mason-registry"):on("package:install:success", function(pkg)
