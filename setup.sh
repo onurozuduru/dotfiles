@@ -84,34 +84,54 @@ installed() {
 
 ## $1: user
 ## $2: repo
-## $3: type -> deb | appimage
 install_from_github() {
 	local user="$1"
 	local repo="$2"
-	local type="$3"
+	local type="deb"
 	log_this "Installing '${type}' from GitHub: ${user}/${repo}"
 	local latest_download_url=$(curl -s "https://api.github.com/repos/${user}/${repo}/releases/latest" | awk -F '"' '/browser_download_url/{print $4}' | grep "${type}" | grep -v "${type}.")
 	local download_name=$(basename "$latest_download_url")
 	log_this "Found: $download_name"
 	curl -LO "$latest_download_url" || return
-	if [[ "$type" == "deb" ]]; then
-		sudo dpkg -i "$download_name"
-	else
-		local bin_name="${download_name%.appimage}"
-		local bin_dir="$HOME/${bin_name}"
-		if [[ -f "$bin_dir/$download_name" ]]; then
-			log_error "Already exists: $bin_dir/$download_name"
-			return
-		fi
-		mkdir "$bin_dir"
-		mv "$download_name" "$bin_dir/$download_name"
-		chmod +x "$bin_dir/$download_name"
-		# shellcheck disable=2015
-		cd "${bin_dir}" && "./$download_name" --appimage-extract >/dev/null && cd - ||
-			log_error "A problem occured while installing $bin_dir"
-		ln -s "$bin_dir/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name" ||
-			log_error "Could not create link: '$HOME/.local/bin/$bin_name' -> '$bin_dir/squashfs-root/usr/bin/$bin_name'"
+	sudo dpkg -i "$download_name"
+	if [[ -f "$download_name" ]]; then
+		log_this "Cleaning: $download_name"
+		rm -f "$download_name"
 	fi
+}
+
+install_nvim() {
+	local type="appimage"
+	local arch="x86_64"
+	log_this "Installing neovim from GitHub: neovim/neovim"
+	local latest_download_url=$(curl -s "https://api.github.com/repos/neovim/neovim/releases/latest" | awk -F '"' '/browser_download_url/{print $4}' | grep "${type}" | grep -v "${type}." | grep "${arch}")
+
+	if [[ -z "$latest_download_url" ]]; then
+		log_error "Could not find latest neovim download URL!"
+		return
+	fi
+	local download_name=$(basename "$latest_download_url")
+
+	log_this "Found: $download_name"
+	log_this "URL: $latest_download_url"
+
+	curl -LO "$latest_download_url" || return
+
+	local bin_name="nvim"
+	local bin_dir="$HOME/${bin_name}"
+	if [[ -f "$bin_dir/$download_name" ]]; then
+		log_error "Already exists: $bin_dir/$download_name"
+		return
+	fi
+
+	mkdir -p "$bin_dir"
+	mv "$download_name" "$bin_dir/$download_name"
+	chmod +x "$bin_dir/$download_name"
+	# shellcheck disable=2015
+	cd "${bin_dir}" && "./$download_name" --appimage-extract >/dev/null && cd - ||
+		log_error "A problem occured while installing $bin_dir"
+	ln -s "$bin_dir/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name" ||
+		log_error "Could not create link: '$HOME/.local/bin/$bin_name' -> '$bin_dir/squashfs-root/usr/bin/$bin_name'"
 	if [[ -f "$download_name" ]]; then
 		log_this "Cleaning: $download_name"
 		rm -f "$download_name"
@@ -123,12 +143,12 @@ install_from_github() {
 
 # Install ripgrep
 if ! installed rg; then
-	install_from_github BurntSushi ripgrep deb
+	install_from_github BurntSushi ripgrep
 fi
 
 # Install neovim appimage
 if ! installed nvim; then
-	install_from_github neovim neovim appimage
+	install_nvim
 fi
 
 if ! installed fzf; then
