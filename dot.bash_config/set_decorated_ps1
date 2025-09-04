@@ -1,0 +1,105 @@
+# declare -A DISTRO_ICONS=(
+# 	[ubuntu]=""        # 
+# 	[debian]="\uf306"   # 
+# 	[arch]="\uf303"     # 
+# 	[alpine]="\uf300"   # 
+# 	[fedora]="\uf30a"   # 
+# 	[centos]="\uf304"   # 
+# 	[manjaro]="\uf312"  # 
+# 	[mint]="\uf30f"     # 
+# 	[opensuse]="\uf314" # 
+# 	[gentoo]="\uf30d"   # 
+# 	[linux]="\uf17c"    # 
+# )
+#
+# declare -A SEPARATORS=(
+# 	[begin]="\ue0b6" # 
+# 	[right]="\ue0c6" # 
+# 	[left]="\ue0c7"  # 
+# )
+#
+# CONTAINER_ICON="\uf308" # 
+# GIT_ICON="\uf418"       # 
+
+declare -A PS_COLORS=(
+	[font]='\[\e[38;2;255;255;255m\]'  # white
+	[bg_os]='\[\e[48;2;227;100;100m\]' # #E36464
+	[fg_os]='\[\e[38;2;227;100;100m\]'
+	[bg_path]='\[\e[48;2;135;192;95m\]' # rgb(135, 192, 95)
+	[fg_path]='\[\e[38;2;135;192;95m\]'
+	[bg_git]='\[\e[48;2;74;194;184m\]' # rgb(74, 194, 184)
+	[fg_git]='\[\e[38;2;74;194;184m\]'
+	[bg_container]='\[\e[48;2;100;100;227m\]' # blue
+	[fg_container]='\[\e[38;2;100;100;227m\]'
+	[reset]='\[\e[0m\]' # reset colors
+)
+
+declare -A DISTRO_ICONS=(
+	[ubuntu]=""   # 
+	[debian]=""   # 
+	[arch]=""     # 
+	[alpine]=""   # 
+	[fedora]=""   # 
+	[centos]=""   # 
+	[manjaro]=""  # 
+	[mint]=""     # 
+	[opensuse]="" # 
+	[gentoo]=""   # 
+	[linux]=""    # 
+)
+
+declare -A SEPARATORS=(
+	[begin]="" # 
+	[right]="" # 
+	[left]=""  # 
+)
+
+CONTAINER_ICON="" # 
+GIT_ICON=""       # 
+
+# # Detect distro
+if [ -f /etc/os-release ]; then
+	DISTRO_ID=$(grep '^ID=' /etc/os-release | cut -d'=' -f2 | tr -d '"' | tr '[:upper:]' '[:lower:]')
+	DISTRO_ICON="${DISTRO_ICONS[$DISTRO_ID]}"
+fi
+
+# Fallback icon if not detected
+DISTRO_ICON="${DISTRO_ICON:-${DISTRO_ICONS[linux]}}" #  (Linux Tux)
+
+PS_DISTRO_PREFIX="${PS_COLORS[fg_os]}${SEPARATORS[begin]}${PS_COLORS[bg_os]}${PS_COLORS[font]}"
+PS_DISTRO_SUFFIX="${PS_COLORS[reset]}${PS_COLORS[fg_os]}${SEPARATORS[right]}${PS_COLORS[reset]}"
+PS_DISTRO="${PS_DISTRO_PREFIX}${DISTRO_ICON} ${PS_DISTRO_SUFFIX}"
+
+CONTAINER_HOST=""
+if [ -e "/run/.toolboxenv" ]; then
+	CONTAINER_HOST="${HOSTNAME%%.*}" # Get the hostname without the domain part
+elif [ -e "/tmp/dev-container-features" ]; then
+	CONTAINER_HOST="${HOSTNAME}"
+fi
+
+if [ -n "$CONTAINER_HOST" ]; then
+	PS_CONTAINER_PREFIX="${PS_COLORS[fg_container]}${SEPARATORS[left]}${PS_COLORS[bg_container]} ${PS_COLORS[font]}"
+	PS_CONTAINER_SUFFIX="${PS_COLORS[reset]}${PS_COLORS[fg_container]}${SEPARATORS[right]}${PS_COLORS[reset]}"
+	PS_CONTAINER="${PS_CONTAINER_PREFIX}${CONTAINER_ICON} ${CONTAINER_HOST} ${PS_CONTAINER_SUFFIX}"
+else
+	PS_CONTAINER=""
+fi
+
+PS_PATH_PREFIX="${PS_COLORS[fg_path]}${SEPARATORS[left]}${PS_COLORS[bg_path]} ${PS_COLORS[font]}"
+PS_PATH_SUFFIX="${PS_COLORS[reset]}${PS_COLORS[fg_path]}${SEPARATORS[right]}${PS_COLORS[reset]}"
+PS_PATH="${PS_PATH_PREFIX}\w ${PS_PATH_SUFFIX}"
+
+PS_GIT_PREFIX="${PS_COLORS[fg_git]}${SEPARATORS[left]}${PS_COLORS[bg_git]} ${PS_COLORS[font]}"
+PS_GIT_SUFFIX="${PS_COLORS[reset]}${PS_COLORS[fg_git]}${SEPARATORS[right]}${PS_COLORS[reset]}"
+
+set_bash_prompt() {
+	local git_segment=""
+	if command -v git &>/dev/null; then
+		local branch
+		branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+		if [ -n "$branch" ]; then
+			git_segment="${PS_GIT_PREFIX}${GIT_ICON} (${branch}) ${PS_GIT_SUFFIX}"
+		fi
+	fi
+	PS1="${PS_DISTRO}${PS_CONTAINER}${PS_PATH}${git_segment} "
+}

@@ -146,9 +146,6 @@ if ! installed npm; then
 fi
 
 mkdir -p ~/.local/bin
-if ! installed oh-my-posh; then
-	curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin
-fi
 
 if [[ ! -d "${HOME}/.tmux/plugins" ]]; then
 	log_this "Installing plugin manager for tmux"

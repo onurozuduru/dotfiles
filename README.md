@@ -16,24 +16,24 @@ Directory structure and setup is managed by simple tool [dothome](https://github
 ```mermaid
 flowchart-elk LR
 %% Main flow
-  BASHRC[bashrc] --> ENV{Does .bash_config/env exist?}
+  BASHRC[bashrc] --> PS1{Does .bash_config/set_decorated_ps1 exist?}
+  PS1 --> ENV{Does .bash_config/env exist?}
   ENV --> ALIASES{Does .bash_config/aliases exist?}
   ALIASES --> FUNCTIONS{Does .bash_config/functions exist?}
   FUNCTIONS --> WORK{Does .bash_config/work/bashrc exist?}
   WORK --> FZF(Source FZF files)
   FZF --> COMP(Source bash completion)
-  COMP --> OMP{Does oh-my-posh command exist?}
-  OMP --> DONE[Done]
+  COMP --> DONE[Done]
 %% Yes branch
-  ENV --> |Yes| SOURCE(Source the file)
+  PS1 --> |Yes| SOURCE(Source the file)
+  ENV --> |Yes| SOURCE
   ALIASES --> |Yes| SOURCE
   FUNCTIONS --> |Yes| SOURCE
   WORK --> |Yes| SOURCE
-  OMP --> |Yes| SETOMP(Set oh-my-posh)
 %% No branch
-  ENV --> |No| CONTINUE(Continue)
+  PS1 --> |No| CONTINUE(Continue)
+  ENV --> |No| CONTINUE
   ALIASES --> |No| CONTINUE
   FUNCTIONS --> |No| CONTINUE
   WORK --> |No| CONTINUE
-  OMP --> |No| CONTINUE
 ```
