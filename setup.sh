@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-#File: install_things.sh
+#File: setup.sh
 #
 #License: MIT
 #
