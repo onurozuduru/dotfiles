@@ -177,8 +177,7 @@ return {
           l = false,
           ["_"] = "parent_or_close",
           ["-"] = "child_or_open",
-          ["z"] = "expand_all_nodes",
-          ["Z"] = "close_all_nodes",
+          ["z"] = "expand_or_close_subnodes",
         },
       },
       renderers = {
@@ -209,14 +208,17 @@ return {
         filtered_items = {
           hide_dotfiles = false,
         },
-        -- commands = {
-        --   expand_all_nodes = function(state)
-        --     -- Solution: https://github.com/nvim-neo-tree/neo-tree.nvim/issues/777#issuecomment-1685959836
-        --     local node = state.tree:get_node()
-        --     local filesystem_commands = require "neo-tree.sources.filesystem.commands"
-        --     filesystem_commands.expand_all_nodes(state, node)
-        --   end,
-        -- },
+        commands = {
+          expand_or_close_subnodes = function(state)
+            local node = state.tree:get_node()
+            local filesystem_commands = require "neo-tree.sources.filesystem.commands"
+            local neo_util = require "neo-tree.utils"
+            if not neo_util.is_expandable(node) or node:is_expanded() then
+              return filesystem_commands.close_all_subnodes(state)
+            end
+            filesystem_commands.expand_all_subnodes(state)
+          end,
+        },
       },
     },
   },
