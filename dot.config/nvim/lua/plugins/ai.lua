@@ -213,16 +213,6 @@ return {
         desc = "CopilotChat - Ask input",
       },
       {
-        "<Leader>acq",
-        function()
-          local input = vim.fn.input "Quick Chat: "
-          if input ~= "" then
-            require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
-          end
-        end,
-        desc = "CopilotChat - Quick chat",
-      },
-      {
         "<Leader>ap",
         ":CopilotChatPrompts<cr>",
         mode = "x",
