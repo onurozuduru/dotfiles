@@ -13,6 +13,7 @@ return {
         "lua-language-server",
         "clangd",
         "bash-language-server",
+        "marksman",
 
         -- install formatters
         "stylua",
@@ -22,6 +23,13 @@ return {
         "cpptools",
       },
     },
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    optional = true,
+    opts = function(_, opts)
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "marksman" })
+    end,
   },
   {
     "jay-babu/mason-nvim-dap.nvim",

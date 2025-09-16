@@ -223,31 +223,6 @@ return {
     },
   },
   {
-    "onurozuduru/himarkdown.nvim",
-    dependencies = "nvim-treesitter/nvim-treesitter",
-    opts = {
-      captures = {
-        title = { mark = "" },
-        quote = { mark = "󰝗" },
-        dash = { mark = "󰇘" },
-      },
-    },
-    -- lazy = false,
-    ft = { "markdown" },
-    keys = function()
-      require("which-key").add {
-        { "<Leader>m", group = "󰍔 Markdown" },
-      }
-      return {
-        {
-          "<Leader>mh",
-          function() require("himarkdown").toggle() end,
-          desc = "Toggle HiMarkdown",
-        },
-      }
-    end,
-  },
-  {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },

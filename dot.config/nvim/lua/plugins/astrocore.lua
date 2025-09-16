@@ -56,6 +56,7 @@ return {
     mappings = {
       -- first key is the mode
       n = {
+        ["grt"] = false,
         ["gl"] = false, -- Hover diagnostics (There is already under <Leader>ld)
         -- ["gra"] = false, -- Disable LSP code action (already can be accessed from <Leader>l)
         -- ["gri"] = false, -- Disable LSP go to implementation (already can be accessed from gd)
