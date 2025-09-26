@@ -99,6 +99,10 @@ if [ -f ~/.bash_config/functions ]; then
 	. ~/.bash_config/functions
 fi
 
+if [ -n "$WSL_INTEROP" ] && [ -f ~/.bash_config/wsl ]; then
+	. ~/.bash_config/wsl
+fi
+
 if [ -f ~/.bash_config/work/bashrc ]; then
 	. ~/.bash_config/work/bashrc
 fi

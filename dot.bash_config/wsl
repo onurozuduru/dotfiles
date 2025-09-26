@@ -1,0 +1,22 @@
+if [[ -n "$WSL_INTEROP" ]]; then
+
+	## Open a file in Windows from WSL
+	# $1: Path to the file to open
+	wopen() {
+		if [[ ! -f "$1" ]]; then
+			echo "File not found: $1" >&2
+			return 1
+		fi
+
+		# shellcheck disable=SC2155
+		local fullpath="$(wslpath -w "$1")"
+
+		# If wslview is available, use it; otherwise, fall back to explorer.exe
+		if command -v wslview >/dev/null 2>&1; then
+			wslview "$fullpath"
+		else
+			explorer.exe "$fullpath"
+		fi
+	}
+
+fi

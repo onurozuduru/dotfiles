@@ -20,7 +20,8 @@ flowchart-elk LR
   PS1 --> ENV{Does .bash_config/env exist?}
   ENV --> ALIASES{Does .bash_config/aliases exist?}
   ALIASES --> FUNCTIONS{Does .bash_config/functions exist?}
-  FUNCTIONS --> WORK{Does .bash_config/work/bashrc exist?}
+  FUNCTIONS --> WSL{Is it WSL where .bash_config/wsl exists?}
+  WSL --> WORK{Does .bash_config/work/bashrc exist?}
   WORK --> FZF(Source FZF files)
   FZF --> COMP(Source bash completion)
   COMP --> DONE[Done]
@@ -29,11 +30,13 @@ flowchart-elk LR
   ENV --> |Yes| SOURCE
   ALIASES --> |Yes| SOURCE
   FUNCTIONS --> |Yes| SOURCE
+  WSL --> |Yes| SOURCE
   WORK --> |Yes| SOURCE
 %% No branch
   PS1 --> |No| CONTINUE(Continue)
   ENV --> |No| CONTINUE
   ALIASES --> |No| CONTINUE
   FUNCTIONS --> |No| CONTINUE
+  WSL --> |No| CONTINUE
   WORK --> |No| CONTINUE
 ```
