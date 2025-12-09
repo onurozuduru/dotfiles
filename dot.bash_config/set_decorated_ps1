@@ -31,6 +31,8 @@ declare -A PS_COLORS=(
 	[fg_git]='\[\e[38;2;74;194;184m\]'
 	[bg_container]='\[\e[48;2;100;100;227m\]' # blue
 	[fg_container]='\[\e[38;2;100;100;227m\]'
+	[bg_venv]='\[\e[48;2;67;78;120m\]' # rgb(67, 78, 120)
+	[fg_venv]='\[\e[38;2;67;78;120m\]'
 	[reset]='\[\e[0m\]' # reset colors
 )
 
@@ -56,6 +58,7 @@ declare -A SEPARATORS=(
 
 CONTAINER_ICON="" # 
 GIT_ICON=""       # 
+VENV_ICON=""      # 
 
 # # Detect distro
 if [ -f /etc/os-release ]; then
@@ -92,6 +95,18 @@ PS_PATH="${PS_PATH_PREFIX}\w ${PS_PATH_SUFFIX}"
 PS_GIT_PREFIX="${PS_COLORS[fg_git]}${SEPARATORS[left]}${PS_COLORS[bg_git]} ${PS_COLORS[font]}"
 PS_GIT_SUFFIX="${PS_COLORS[reset]}${PS_COLORS[fg_git]}${SEPARATORS[right]}${PS_COLORS[reset]}"
 
+# disable the default virtualenv prompt change
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+set_venv_section() {
+	PS_VENV=""
+	if [ -n "$VIRTUAL_ENV" ]; then
+		NAME_VENV="${VIRTUAL_ENV##*.}"
+		PS_VENV_PREFIX="${PS_COLORS[fg_venv]}${SEPARATORS[left]}${PS_COLORS[bg_venv]} ${PS_COLORS[font]}"
+		PS_VENV_SUFFIX="${PS_COLORS[reset]}${PS_COLORS[fg_venv]}${SEPARATORS[right]}${PS_COLORS[reset]}"
+		PS_VENV="${PS_VENV_PREFIX}${VENV_ICON} (${NAME_VENV}) ${PS_VENV_SUFFIX}"
+	fi
+}
+
 set_bash_prompt() {
 	local git_segment=""
 	if command -v git &>/dev/null; then
@@ -101,5 +116,6 @@ set_bash_prompt() {
 			git_segment="${PS_GIT_PREFIX}${GIT_ICON} (${branch}) ${PS_GIT_SUFFIX}"
 		fi
 	fi
-	PS1="${PS_DISTRO}${PS_CONTAINER}${PS_PATH}${git_segment} "
+	set_venv_section
+	PS1="${PS_DISTRO}${PS_CONTAINER}${PS_PATH}${git_segment}${PS_VENV} "
 }
