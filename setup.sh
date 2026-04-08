@@ -104,7 +104,9 @@ install_nvim() {
 	local type="appimage"
 	local arch="x86_64"
 	log_this "Installing neovim from GitHub: neovim/neovim"
-	local latest_download_url=$(curl -s "https://api.github.com/repos/neovim/neovim/releases/latest" | awk -F '"' '/browser_download_url/{print $4}' | grep "${type}" | grep -v "${type}." | grep "${arch}")
+	# local latest_download_url=$(curl -s "https://api.github.com/repos/neovim/neovim/releases/latest" | awk -F '"' '/browser_download_url/{print $4}' | grep "${type}" | grep -v "${type}." | grep "${arch}")
+	# TODO: Pin to v0.11.7 because of breaking changes in v0.12.0
+	local latest_download_url=$(curl -s "https://api.github.com/repos/neovim/neovim/releases/302725579" | awk -F '"' '/browser_download_url/{print $4}' | grep "${type}" | grep -v "${type}." | grep "${arch}")
 
 	if [[ -z "$latest_download_url" ]]; then
 		log_error "Could not find latest neovim download URL!"
@@ -127,11 +129,16 @@ install_nvim() {
 	mkdir -p "$bin_dir"
 	mv "$download_name" "$bin_dir/$download_name"
 	chmod +x "$bin_dir/$download_name"
-	# shellcheck disable=2015
-	cd "${bin_dir}" && "./$download_name" --appimage-extract >/dev/null && cd - ||
-		log_error "A problem occured while installing $bin_dir"
-	ln -s "$bin_dir/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name" ||
+	(
+		# shellcheck disable=2015
+		if ! "./$download_name" --appimage-extract >/dev/null; then
+			log_error "A problem occured while installing $bin_dir"
+			return 0
+		fi
+	)
+	if ! ln -s "$bin_dir/squashfs-root/usr/bin/$bin_name" "$HOME/.local/bin/$bin_name"; then
 		log_error "Could not create link: '$HOME/.local/bin/$bin_name' -> '$bin_dir/squashfs-root/usr/bin/$bin_name'"
+	fi
 	if [[ -f "$download_name" ]]; then
 		log_this "Cleaning: $download_name"
 		rm -f "$download_name"
